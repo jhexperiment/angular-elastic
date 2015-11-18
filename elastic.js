@@ -17,8 +17,14 @@ angular.module('monospaced.elastic', [])
   })
 
   .directive('msdElastic', [
-    '$timeout', '$window', 'msdElasticConfig',
-    function($timeout, $window, config) {
+    '$timeout',
+    '$window',
+    'msdElasticConfig',
+    function (
+      $timeout,
+      $window,
+      config
+    ) {
       'use strict';
 
       return {
@@ -188,8 +194,28 @@ angular.module('monospaced.elastic', [])
           if ('onpropertychange' in ta && 'oninput' in ta) {
             // IE9
             ta['oninput'] = ta.onkeyup = adjust;
-          } else {
+          }
+          else {
             ta['oninput'] = adjust;
+          }
+
+          if (attrs.msdSubmit) {
+            $ta.bind("keydown.enter keypress.enter", function(event) {
+              var keyCode = event.which || event.keyCode;
+
+              // If enter key is pressed
+              if (
+                (keyCode === 13)
+                && ! (event.altKey || event.ctrlKey || event.shiftKey || event.metaKey)
+              ) {
+                scope.$apply(function() {
+                  // Evaluate the expression
+                  scope.$eval(attrs.msdSubmit);
+                });
+
+                event.preventDefault();
+              }
+            });
           }
 
           $win.bind('resize', forceAdjust);
